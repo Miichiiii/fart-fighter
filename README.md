@@ -1,5 +1,7 @@
 # ![gif-intro](gif-intro.gif)
 
+<img src="gif-intro.gif" alt="Gif">
+
 # Fart Fighter
 
 Fart Fighter ist ein humorvolles 2D-Kampfspiel, das komplett auf Deutsch lokalisiert ist. Kämpfe mit einzigartigen Furz-Kämpfern in verschiedenen Stages und genieße eine musikalische Untermalung mit Furz-Songs.
