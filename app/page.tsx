@@ -83,7 +83,7 @@ export default function IntroScreen() {
             showStart ? "blink" : ""
           }`}
         >
-          Drücke ENTER zum Starten
+          Drücke "ENTER" zum Starten
         </div>
 
         <div className="text-white text-sm text-center space-y-1 mt-[200px]">
@@ -101,7 +101,8 @@ export default function IntroScreen() {
                 "2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.7)",
             }}
           >
-            Co-Enginered by - VS-Code: Claude Sonnet 4.5, Gemini 2.5, deevid.ai & pixverse.ai
+            Co-Enginered by - VS-Code: Claude Sonnet 4.5, Gemini 2.5, deevid.ai
+            & pixverse.ai
           </div>
           <div
             style={{
