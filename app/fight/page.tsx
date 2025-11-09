@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fighters } from "@/lib/fighters";
 import { useKeyboardControls } from "@/hooks/use-keyboard-controls";
 import { FightControls } from "@/components/fight-controls";
+import { MobileControls } from "@/components/mobile-controls";
 import { PowerBar } from "@/components/power-bar";
 import { Fighter } from "@/components/fighter";
 import { getRandomFighter } from "@/lib/game-utils";
 import { getStageBackgroundByRound } from "@/lib/stage-utils";
 import { useSoundContext } from "@/components/sound-context";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function FightScreen() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function FightScreen() {
   const playerId = searchParams.get("player") || fighters[0].id;
   const playerFighter = fighters.find((f) => f.id === playerId) || fighters[0];
   const { setCurrentTrack } = useSoundContext();
+  const isMobile = useIsMobile();
 
   // Get round number and difficulty from URL
   const roundCount = Number.parseInt(searchParams.get("round") || "1", 10);
@@ -100,6 +103,43 @@ export default function FightScreen() {
   // Set up keyboard controls
   const { isKeyDown, resetKeys } = useKeyboardControls();
 
+  // Mobile touch controls state
+  const [touchControls, setTouchControls] = useState({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+    punch: false,
+    kick: false,
+    defence: false,
+  });
+
+  // Handle mobile control actions
+  const handleMobileAction = (action: string, isPressed: boolean) => {
+    setTouchControls((prev) => ({
+      ...prev,
+      [action]: isPressed,
+    }));
+  };
+
+  // Combine keyboard and touch controls
+  const isControlActive = (control: string) => {
+    if (isMobile) {
+      return (touchControls as any)[control] || false;
+    }
+    // Map touch control names to keyboard keys
+    const keyMap: Record<string, keyof typeof isKeyDown> = {
+      up: "ArrowUp",
+      down: "ArrowDown",
+      left: "ArrowLeft",
+      right: "ArrowRight",
+      punch: "d",
+      kick: "a",
+      defence: "s",
+    };
+    return isKeyDown[keyMap[control]] || false;
+  };
+
   // Calculate actual positions for hit detection - slightly reduced hit area
   const getPlayerCenterX = () => playerPosition + 70;
   const getCpuCenterX = () => window.innerWidth - cpuPosition - 70;
@@ -124,9 +164,12 @@ export default function FightScreen() {
 
   // Handle single tap movement for player
   useEffect(() => {
+    const leftActive = isControlActive("left");
+    const rightActive = isControlActive("right");
+
     // Handle single tap for left arrow
     if (
-      isKeyDown.ArrowLeft &&
+      leftActive &&
       !arrowLeftPressed &&
       playerState !== "jump" &&
       playerState !== "defence" &&
@@ -149,15 +192,15 @@ export default function FightScreen() {
         setPlayerPosition(newPosition);
       }
     }
-    if (!isKeyDown.ArrowLeft && arrowLeftPressed) {
+    if (!leftActive && arrowLeftPressed) {
       setArrowLeftPressed(false);
       // Stop walking animation if both movement keys are up
-      if (!isKeyDown.ArrowRight) setIsPlayerWalking(false);
+      if (!rightActive) setIsPlayerWalking(false);
     }
 
     // Handle single tap for right arrow
     if (
-      isKeyDown.ArrowRight &&
+      rightActive &&
       !arrowRightPressed &&
       playerState !== "jump" &&
       playerState !== "defence" &&
@@ -183,12 +226,13 @@ export default function FightScreen() {
         setPlayerPosition(newPosition);
       }
     }
-    if (!isKeyDown.ArrowRight && arrowRightPressed) {
+    if (!rightActive && arrowRightPressed) {
       setArrowRightPressed(false);
       // Stop walking animation if both movement keys are up
-      if (!isKeyDown.ArrowLeft) setIsPlayerWalking(false);
+      if (!leftActive) setIsPlayerWalking(false);
     }
   }, [
+    touchControls,
     isKeyDown.ArrowLeft,
     isKeyDown.ArrowRight,
     arrowLeftPressed,
@@ -196,6 +240,7 @@ export default function FightScreen() {
     playerState,
     playerPosition,
     cpuPosition,
+    isMobile,
   ]);
 
   // Set background music for fight screen
@@ -544,6 +589,9 @@ export default function FightScreen() {
   useEffect(() => {
     if (gameOver) return;
 
+    const rightActive = isControlActive("right");
+    const leftActive = isControlActive("left");
+
     // Clear any existing movement interval
     if (movementIntervalRef.current) {
       clearInterval(movementIntervalRef.current);
@@ -551,17 +599,14 @@ export default function FightScreen() {
     }
 
     // Handle movement and direction
-    if (
-      (isKeyDown.ArrowRight || isKeyDown.ArrowLeft) &&
-      playerState !== "duck"
-    ) {
+    if ((rightActive || leftActive) && playerState !== "duck") {
       // Set walking animation when moving
       if (playerState === "idle") setIsPlayerWalking(true);
 
       // Set up continuous movement
       movementIntervalRef.current = window.setInterval(() => {
         if (
-          isKeyDown.ArrowRight &&
+          rightActive &&
           playerState !== "jump" &&
           playerState !== "defence" &&
           playerState !== "duck"
@@ -582,7 +627,7 @@ export default function FightScreen() {
             setPlayerPosition(newPosition);
           }
         } else if (
-          isKeyDown.ArrowLeft &&
+          leftActive &&
           playerState !== "jump" &&
           playerState !== "defence" &&
           playerState !== "duck"
@@ -602,20 +647,30 @@ export default function FightScreen() {
       }
     };
   }, [
+    touchControls,
     isKeyDown.ArrowRight,
     isKeyDown.ArrowLeft,
     gameOver,
     playerState,
     playerPosition,
     cpuPosition,
+    isMobile,
   ]);
 
   // Handle jump with direction - only jump once per key press
   useEffect(() => {
     if (gameOver) return;
 
+    const upActive = isControlActive("up");
+    const downActive = isControlActive("down");
+    const leftActive = isControlActive("left");
+    const rightActive = isControlActive("right");
+    const punchActive = isControlActive("punch");
+    const kickActive = isControlActive("kick");
+    const defenceActive = isControlActive("defence");
+
     // Handle jump key press
-    if (isKeyDown.ArrowUp && playerState === "idle" && !jumpKeyPressed) {
+    if (upActive && playerState === "idle" && !jumpKeyPressed) {
       setJumpKeyPressed(true);
       setPlayerLastAction("jump");
       // Stop walking animation during jump
@@ -624,12 +679,12 @@ export default function FightScreen() {
       // Determine jump direction
       let direction: "left" | "right" | null = null;
 
-      if (isKeyDown.ArrowLeft) {
+      if (leftActive) {
         direction = "left";
         setIsPlayerFacingLeft(true);
         // Move left while jumping
         setPlayerPosition((prev) => Math.max(prev - 50, 50));
-      } else if (isKeyDown.ArrowRight) {
+      } else if (rightActive) {
         direction = "right";
         setIsPlayerFacingLeft(false);
         // Move right while jumping
@@ -650,21 +705,21 @@ export default function FightScreen() {
     }
 
     // Reset jump key pressed state when key is released
-    if (!isKeyDown.ArrowUp && jumpKeyPressed) {
+    if (!upActive && jumpKeyPressed) {
       setJumpKeyPressed(false);
     }
 
-    if (isKeyDown.ArrowDown && playerState === "idle") {
+    if (downActive && playerState === "idle") {
       setPlayerState("duck");
       setPlayerLastAction("duck");
       // Stop walking animation during duck
       setIsPlayerWalking(false);
-    } else if (!isKeyDown.ArrowDown && playerState === "duck") {
+    } else if (!downActive && playerState === "duck") {
       setPlayerState("idle");
       setPlayerLastAction("idle");
     }
 
-    if (isKeyDown.d && playerState === "idle") {
+    if (punchActive && playerState === "idle") {
       setPlayerState("punch");
       setPlayerLastAction("punch");
       // Stop walking animation during punch
@@ -707,11 +762,11 @@ export default function FightScreen() {
         setPlayerState("idle");
         setPlayerLastAction("idle");
       }, 300);
-      resetKeys(["d"]);
+      if (!isMobile) resetKeys(["d"]);
     }
 
     // Handle kick - now works both on ground and in air
-    if (isKeyDown.a && (playerState === "idle" || playerState === "jump")) {
+    if (kickActive && (playerState === "idle" || playerState === "jump")) {
       // If in air, do a jump kick, otherwise do a regular kick
       const isJumpKick = playerState === "jump";
 
@@ -768,11 +823,11 @@ export default function FightScreen() {
           setPlayerLastAction("idle");
         }, 400);
       }
-      resetKeys(["a"]);
+      if (!isMobile) resetKeys(["a"]);
     }
 
     // Handle defence with S key
-    if (isKeyDown.s && playerState === "idle") {
+    if (defenceActive && playerState === "idle") {
       setPlayerState("defence");
       setPlayerLastAction("defence");
       setIsPlayerDefending(true);
@@ -784,9 +839,10 @@ export default function FightScreen() {
         setPlayerLastAction("idle");
         setIsPlayerDefending(false);
       }, 500);
-      resetKeys(["s"]);
+      if (!isMobile) resetKeys(["s"]);
     }
   }, [
+    touchControls,
     isKeyDown.ArrowUp,
     isKeyDown.ArrowDown,
     isKeyDown.ArrowLeft,
@@ -804,6 +860,7 @@ export default function FightScreen() {
     resetKeys,
     jumpKeyPressed,
     isPlayerFacingLeft,
+    isMobile,
   ]);
 
   const endGame = (winner: "player" | "cpu") => {
@@ -890,6 +947,9 @@ export default function FightScreen() {
         {/* Controls help */}
         <FightControls />
       </div>
+
+      {/* Mobile touch controls */}
+      {isMobile && <MobileControls onAction={handleMobileAction} />}
     </div>
   );
 }

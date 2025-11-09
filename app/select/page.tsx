@@ -5,11 +5,19 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { fighters } from "@/lib/fighters";
 import { useSoundContext } from "@/components/sound-context";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function CharacterSelect() {
   const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { setCurrentTrack } = useSoundContext();
+  const isMobile = useIsMobile();
+
+  const handleStartFight = () => {
+    router.push(
+      `/fight?player=${fighters[selectedIndex].id}&round=1&difficulty=1.0&prevOpponents=`
+    );
+  };
 
   useEffect(() => {
     // Set the track for this page
@@ -46,10 +54,7 @@ export default function CharacterSelect() {
           });
           break;
         case "Enter":
-          // Navigate to fight
-          router.push(
-            `/fight?player=${fighters[selectedIndex].id}&round=1&difficulty=1.0&prevOpponents=`
-          );
+          handleStartFight();
           break;
       }
     };
@@ -79,15 +84,18 @@ export default function CharacterSelect() {
             style={{ marginBottom: "80px" }}
           >
             {fighters.map((fighter, index) => (
-              <div
+              <button
                 key={fighter.id}
                 className={`relative cursor-pointer transition-all border-4 ${
                   selectedIndex === index
                     ? "border-orange-500 shadow-lg shadow-orange-500/50"
                     : "border-gray-700 hover:border-gray-500"
                 }`}
-                style={{ width: "100px", height: "100px" }}
+                style={{ width: "100px", height: "100px", padding: 0 }}
                 onClick={() => {
+                  setSelectedIndex(index);
+                }}
+                onTouchStart={() => {
                   setSelectedIndex(index);
                 }}
               >
@@ -99,13 +107,17 @@ export default function CharacterSelect() {
                   style={{ width: "100px", height: "100px" }}
                   className="pixelated object-cover"
                 />
-              </div>
+              </button>
             ))}
           </div>
 
-          <div className="text-center text-sm text-gray-400 game-text bg-black/60 py-3 px-6 rounded blink">
-            Drücke ENTER zum Starten
-          </div>
+          <button
+            onClick={handleStartFight}
+            onTouchStart={handleStartFight}
+            className="text-center text-sm text-gray-400 game-text bg-black/60 py-3 px-6 rounded blink cursor-pointer border-2 border-gray-600 hover:border-orange-500 transition-colors"
+          >
+            {isMobile ? "Tippen zum Starten" : "Drücke ENTER zum Starten"}
+          </button>
         </div>
 
         {/* Right side - Selected Fighter Details */}

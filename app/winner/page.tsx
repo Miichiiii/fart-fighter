@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { fighters } from "@/lib/fighters";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function WinnerScreen() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function WinnerScreen() {
   const cpuId = searchParams.get("cpu") || fighters[1].id;
   const roundCount = Number.parseInt(searchParams.get("round") || "1", 10);
   const difficulty = Number.parseFloat(searchParams.get("difficulty") || "1.0");
+  const isMobile = useIsMobile();
 
   // Get previous opponents from URL
   const previousOpponentsParam = searchParams.get("prevOpponents") || "";
@@ -168,24 +170,32 @@ export default function WinnerScreen() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center mt-8">
-          <div
-            className={`game-text text-xl ${
+        <div className="flex flex-col items-center mt-8 gap-4">
+          <button
+            onClick={startNextRound}
+            onTouchStart={startNextRound}
+            className={`game-text text-xl cursor-pointer bg-black/60 py-3 px-6 rounded border-2 border-gray-600 hover:border-orange-500 transition-colors ${
               showContinue ? "blink" : "opacity-0"
             }`}
           >
             {winner === "player"
-              ? "ENTER FÜR NÄCHSTE RUNDE"
+              ? isMobile
+                ? "TIPPEN FÜR NÄCHSTE RUNDE"
+                : "ENTER FÜR NÄCHSTE RUNDE"
+              : isMobile
+              ? "TIPPEN ZUM NOCHMAL SPIELEN"
               : "ENTER ZUM NOCHMAL SPIELEN"}
-          </div>
+          </button>
 
           {winner === "player" && (
-            <div
-              className="game-text text-lg mt-2"
+            <button
+              onClick={() => router.push("/")}
+              onTouchStart={() => router.push("/")}
+              className="game-text text-lg cursor-pointer bg-black/60 py-2 px-4 rounded border-2 border-gray-600 hover:border-orange-500 transition-colors"
               style={{ color: "#5D1A11" }}
             >
-              ESC FÜR HAUPTMENÜ
-            </div>
+              {isMobile ? "TIPPEN FÜR HAUPTMENÜ" : "ESC FÜR HAUPTMENÜ"}
+            </button>
           )}
         </div>
       </div>

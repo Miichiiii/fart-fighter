@@ -1,4 +1,15 @@
+"use client";
+
+import { useIsMobile } from "@/hooks/use-mobile";
+
 export function FightControls() {
+  const isMobile = useIsMobile();
+
+  // On mobile, don't show keyboard controls (mobile touch controls are displayed instead)
+  if (isMobile) {
+    return null;
+  }
+
   const controlStyle = {
     padding: "8px 16px",
     border: "2px solid #444",

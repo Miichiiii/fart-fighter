@@ -21,6 +21,10 @@ export default function IntroScreen() {
   const glitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { setCurrentTrack } = useSoundContext();
 
+  const handleStart = () => {
+    router.push(`/select`);
+  };
+
   useEffect(() => {
     // Set the track for this page
     setCurrentTrack("/Der Furzsong.mp3");
@@ -49,7 +53,7 @@ export default function IntroScreen() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        router.push(`/select`);
+        handleStart();
       }
     };
 
@@ -78,13 +82,18 @@ export default function IntroScreen() {
       />
 
       <div className="z-10 flex flex-col items-center justify-center space-y-8">
-        <div
+        <button
+          onClick={handleStart}
+          onTouchStart={handleStart}
           className={`game-text text-white text-2xl mt-[650px] ${
             showStart ? "blink" : ""
-          }`}
+          } cursor-pointer bg-transparent border-none`}
+          style={{
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
+          }}
         >
           Drücke "ENTER" zum Starten
-        </div>
+        </button>
 
         <div className="text-white text-sm text-center space-y-1 mt-[200px]">
           <div
