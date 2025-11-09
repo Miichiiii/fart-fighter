@@ -57,17 +57,12 @@ export function MobileControls({ onAction }: MobileControlsProps) {
 
   return (
     <div
-      className="fixed inset-0 pointer-events-none z-50"
+      className="fixed bottom-0 left-0 right-0 pointer-events-none z-50"
       style={{
-        display: "flex",
-        flexDirection: "column" as const,
-        justifyContent: "space-between",
         padding: "10px",
+        paddingBottom: "20px", // Extra padding from bottom edge
       }}
     >
-      {/* Top section - empty for now, game UI is here */}
-      <div style={{ flex: 1 }} />
-
       {/* Bottom section - controls */}
       <div
         style={{
@@ -76,7 +71,6 @@ export function MobileControls({ onAction }: MobileControlsProps) {
           alignItems: "flex-end",
           gap: "10px",
           pointerEvents: "auto",
-          paddingBottom: "10px",
         }}
       >
         {/* Left side - D-Pad */}
