@@ -12,6 +12,7 @@ import { getRandomFighter } from "@/lib/game-utils";
 import { getStageBackgroundByRound } from "@/lib/stage-utils";
 import { useSoundContext } from "@/components/sound-context";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTelegramHaptic } from "@/lib/telegram";
 
 export default function FightScreen() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function FightScreen() {
   const playerFighter = fighters.find((f) => f.id === playerId) || fighters[0];
   const { setCurrentTrack } = useSoundContext();
   const isMobile = useIsMobile();
+  const { impact } = useTelegramHaptic();
 
   // Get round number and difficulty from URL
   const roundCount = Number.parseInt(searchParams.get("round") || "1", 10);
@@ -671,6 +673,7 @@ export default function FightScreen() {
 
     // Handle jump key press
     if (upActive && playerState === "idle" && !jumpKeyPressed) {
+      impact("light");
       setJumpKeyPressed(true);
       setPlayerLastAction("jump");
       // Stop walking animation during jump
@@ -720,6 +723,7 @@ export default function FightScreen() {
     }
 
     if (punchActive && playerState === "idle") {
+      impact("light");
       setPlayerState("punch");
       setPlayerLastAction("punch");
       // Stop walking animation during punch
@@ -740,9 +744,11 @@ export default function FightScreen() {
       ) {
         // If CPU is defending, they take reduced damage (1%)
         if (cpuState === "defence") {
+          impact("medium");
           setCpuHealth((prev) => Math.max(0, prev - 1)); // 1% damage when defending
           // Don't set isCpuHit when defending - keep defense sprite
         } else {
+          impact("heavy");
           setCpuHealth((prev) => Math.max(0, prev - 5)); // Normal damage
           setIsCpuHit(true);
           setTimeout(() => setIsCpuHit(false), 300);
@@ -767,6 +773,7 @@ export default function FightScreen() {
 
     // Handle kick - now works both on ground and in air
     if (kickActive && (playerState === "idle" || playerState === "jump")) {
+      impact("light");
       // If in air, do a jump kick, otherwise do a regular kick
       const isJumpKick = playerState === "jump";
 
@@ -796,9 +803,11 @@ export default function FightScreen() {
       ) {
         // If CPU is defending, they take reduced damage (1%)
         if (cpuState === "defence") {
+          impact("medium");
           setCpuHealth((prev) => Math.max(0, prev - 1)); // 1% damage when defending
           // Don't set isCpuHit when defending - keep defense sprite
         } else {
+          impact("heavy");
           // Jump kicks do more damage
           const damage = isJumpKick ? 15 : 10;
           setCpuHealth((prev) => Math.max(0, prev - damage)); // Normal damage
@@ -828,6 +837,7 @@ export default function FightScreen() {
 
     // Handle defence with S key
     if (defenceActive && playerState === "idle") {
+      impact("rigid");
       setPlayerState("defence");
       setPlayerLastAction("defence");
       setIsPlayerDefending(true);
@@ -905,8 +915,8 @@ export default function FightScreen() {
       <div className="z-10 flex flex-col items-center justify-start w-full h-full">
         {/* Health bars */}
         <div
-          className="w-full px-8 flex justify-between"
-          style={{ paddingTop: "20px" }}
+          className="w-full px-2 sm:px-4 md:px-8 flex justify-between gap-2 sm:gap-4"
+          style={{ paddingTop: "max(10px, env(safe-area-inset-top))" }}
         >
           <PowerBar health={playerHealth} name={playerFighter.name} />
           <PowerBar health={cpuHealth} name={cpuFighter.name} reversed />

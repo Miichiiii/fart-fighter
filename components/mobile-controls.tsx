@@ -24,43 +24,48 @@ export function MobileControls({ onAction }: MobileControlsProps) {
   };
 
   const buttonStyle = (action: string) => ({
-    padding: "12px",
-    border: "3px solid #FFD700",
-    borderRadius: "10px",
+    padding: "10px",
+    border: "2px solid #FFD700",
+    borderRadius: "12px",
     backgroundColor: activeButtons.has(action)
       ? "#FFD700"
-      : "rgba(26, 26, 26, 0.8)",
+      : "rgba(26, 26, 26, 0.85)",
     color: activeButtons.has(action) ? "#000" : "#FFD700",
     fontWeight: "bold" as const,
-    fontSize: "14px",
+    fontSize: "12px",
     textAlign: "center" as const,
     userSelect: "none" as const,
-    touchAction: "none",
+    touchAction: "manipulation",
     boxShadow: activeButtons.has(action)
-      ? "0 0 20px rgba(255, 215, 0, 0.8)"
-      : "0 4px 12px rgba(0, 0, 0, 0.7)",
+      ? "0 0 15px rgba(255, 215, 0, 0.9), inset 0 2px 4px rgba(0,0,0,0.3)"
+      : "0 3px 10px rgba(0, 0, 0, 0.8)",
     transition: "all 0.05s ease",
-    minWidth: "55px",
-    minHeight: "55px",
+    minWidth: "60px",
+    minHeight: "60px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     WebkitTapHighlightColor: "transparent",
+    cursor: "pointer",
+    transform: activeButtons.has(action) ? "scale(0.95)" : "scale(1)",
   });
 
   const dpadButtonStyle = (action: string) => ({
     ...buttonStyle(action),
-    minWidth: "65px",
-    minHeight: "65px",
-    fontSize: "22px",
+    minWidth: "70px",
+    minHeight: "70px",
+    fontSize: "24px",
+    borderWidth: "3px",
   });
 
   return (
     <div
       className="fixed bottom-0 left-0 right-0 pointer-events-none z-50"
       style={{
-        padding: "10px",
-        paddingBottom: "20px", // Extra padding from bottom edge
+        padding: "8px",
+        paddingBottom: "max(20px, env(safe-area-inset-bottom))",
+        background:
+          "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%)",
       }}
     >
       {/* Bottom section - controls */}

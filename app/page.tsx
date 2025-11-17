@@ -13,6 +13,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSoundContext } from "@/components/sound-context";
+import { initTelegramWebApp, useTelegramHaptic } from "@/lib/telegram";
 
 export default function IntroScreen() {
   const router = useRouter();
@@ -20,10 +21,17 @@ export default function IntroScreen() {
   const [glitch, setGlitch] = useState(false);
   const glitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { setCurrentTrack } = useSoundContext();
+  const { impact } = useTelegramHaptic();
 
   const handleStart = () => {
+    impact("medium");
     router.push(`/select`);
   };
+
+  useEffect(() => {
+    // Initialize Telegram WebApp
+    initTelegramWebApp();
+  }, []);
 
   useEffect(() => {
     // Set the track for this page
@@ -95,7 +103,7 @@ export default function IntroScreen() {
           Drücke "ENTER" zum Starten
         </button>
 
-        <div className="text-white text-sm text-center space-y-1 mt-[200px]">
+        <div className="text-white text-xs sm:text-sm text-center space-y-1 mt-[100px] sm:mt-[200px] px-2">
           <div
             style={{
               textShadow:
@@ -105,6 +113,7 @@ export default function IntroScreen() {
             Game Made by - Michael Medvidov
           </div>
           <div
+            className="hidden sm:block"
             style={{
               textShadow:
                 "2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.7)",

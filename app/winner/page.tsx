@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { fighters } from "@/lib/fighters";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTelegramHaptic } from "@/lib/telegram";
 
 export default function WinnerScreen() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function WinnerScreen() {
   const roundCount = Number.parseInt(searchParams.get("round") || "1", 10);
   const difficulty = Number.parseFloat(searchParams.get("difficulty") || "1.0");
   const isMobile = useIsMobile();
+  const { impact, notification } = useTelegramHaptic();
 
   // Get previous opponents from URL
   const previousOpponentsParam = searchParams.get("prevOpponents") || "";
@@ -31,7 +33,9 @@ export default function WinnerScreen() {
 
   // Function to start next round with a new opponent
   const startNextRound = useCallback(() => {
+    impact("medium");
     if (winner === "player") {
+      notification("success");
       // Get a random opponent different from the current one and previous 5 opponents
       const opponentsToAvoid = [playerId, cpuId, ...previousOpponents];
       const availableFighters = fighters.filter(
@@ -108,15 +112,17 @@ export default function WinnerScreen() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter") {
+        impact("medium");
         startNextRound();
       } else if (e.key === "Escape") {
+        impact("light");
         router.push("/");
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [router, startNextRound]);
+  }, [router, startNextRound, impact]);
 
   const winnerText =
     winner === "player" ? "Du hast gewonnen!" : "Du hast verloren!";
@@ -150,14 +156,17 @@ export default function WinnerScreen() {
         <div className="absolute inset-0 bg-black/30" />
       </div>
 
-      <div className="z-10 flex flex-col items-center justify-between h-full py-12">
-        <h1 className="game-title text-6xl" style={{ color: titleColor }}>
+      <div className="z-10 flex flex-col items-center justify-between h-full py-6 sm:py-12 px-4">
+        <h1
+          className="game-title text-3xl sm:text-4xl lg:text-6xl text-center"
+          style={{ color: titleColor }}
+        >
           {winnerText}
         </h1>
 
         <div className="flex-grow flex items-end justify-center">
           {/* Position sprite at the bottom */}
-          <div className="relative w-80 h-80 flex items-end justify-center">
+          <div className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 flex items-end justify-center">
             <Image
               src={spriteToShow || "/placeholder.svg"}
               alt={
@@ -166,35 +175,30 @@ export default function WinnerScreen() {
               width={200}
               height={200}
               className="pixelated object-contain object-bottom"
+              unoptimized
             />
           </div>
         </div>
 
-        <div className="flex flex-col items-center mt-8 gap-4">
+        <div className="flex flex-col items-center mt-4 sm:mt-8 gap-3 sm:gap-4 w-full max-w-md pb-safe">
           <button
             onClick={startNextRound}
             onTouchStart={startNextRound}
-            className={`game-text text-xl cursor-pointer bg-black/60 py-3 px-6 rounded border-2 border-gray-600 hover:border-orange-500 transition-colors ${
+            className={`game-text text-sm sm:text-base lg:text-xl cursor-pointer bg-black/60 py-2 sm:py-3 px-4 sm:px-6 rounded border-2 border-gray-600 active:border-orange-500 active:scale-95 transition-all touch-manipulation w-full ${
               showContinue ? "blink" : "opacity-0"
             }`}
           >
-            {winner === "player"
-              ? isMobile
-                ? "TIPPEN FÜR NÄCHSTE RUNDE"
-                : "ENTER FÜR NÄCHSTE RUNDE"
-              : isMobile
-              ? "TIPPEN ZUM NOCHMAL SPIELEN"
-              : "ENTER ZUM NOCHMAL SPIELEN"}
+            {winner === "player" ? "NÄCHSTE RUNDE" : "NOCHMAL SPIELEN"}
           </button>
 
           {winner === "player" && (
             <button
               onClick={() => router.push("/")}
               onTouchStart={() => router.push("/")}
-              className="game-text text-lg cursor-pointer bg-black/60 py-2 px-4 rounded border-2 border-gray-600 hover:border-orange-500 transition-colors"
+              className="game-text text-xs sm:text-sm lg:text-lg cursor-pointer bg-black/60 py-2 px-3 sm:px-4 rounded border-2 border-gray-600 active:border-orange-500 active:scale-95 transition-all touch-manipulation w-full"
               style={{ color: "#5D1A11" }}
             >
-              {isMobile ? "TIPPEN FÜR HAUPTMENÜ" : "ESC FÜR HAUPTMENÜ"}
+              HAUPTMENÜ
             </button>
           )}
         </div>
