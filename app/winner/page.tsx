@@ -143,7 +143,10 @@ export default function WinnerScreen() {
   const titleColor = winner === "player" ? "#5D1A11" : "#361E13";
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+    <div
+      className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+      style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
+    >
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-[#001428] pixelated">
         <Image

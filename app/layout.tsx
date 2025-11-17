@@ -32,6 +32,17 @@ export default function RootLayout({
   return (
     <html lang="de" suppressHydrationWarning>
       <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+        />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <meta name="theme-color" content="#000000" />
         <link
           href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
           rel="stylesheet"
@@ -41,7 +52,15 @@ export default function RootLayout({
           async
         ></script>
       </head>
-      <body className="bg-black min-h-screen touch-manipulation overscroll-none">
+      <body
+        className="bg-black min-h-screen touch-manipulation overscroll-none"
+        style={{
+          position: "fixed",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+        }}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -50,7 +69,10 @@ export default function RootLayout({
         >
           <SoundProvider>
             <MuteButton />
-            <main className="flex min-h-screen flex-col items-center justify-center">
+            <main
+              className="flex w-full h-full flex-col items-center justify-center"
+              style={{ position: "relative", overflow: "hidden" }}
+            >
               {children}
             </main>
           </SoundProvider>

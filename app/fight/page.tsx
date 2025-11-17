@@ -893,7 +893,10 @@ export default function FightScreen() {
   };
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+    <div
+      className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+      style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
+    >
       {/* Background */}
       {stageBackground && (
         <img
@@ -906,6 +909,7 @@ export default function FightScreen() {
             width: "100%",
             height: "100%",
             objectFit: "cover",
+            objectPosition: "center",
             zIndex: 0,
           }}
         />

@@ -69,7 +69,10 @@ export default function CharacterSelect() {
   }, [selectedIndex, router]);
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black">
+    <div
+      className="relative w-full h-full flex items-center justify-center overflow-hidden bg-black"
+      style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
+    >
       {/* Background */}
       <div className="absolute inset-0 z-0 bg-[#001428]">
         <div className="absolute inset-0 bg-black/60" />

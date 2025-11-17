@@ -70,7 +70,10 @@ export default function IntroScreen() {
   }, [router]);
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-black">
+    <div
+      className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden bg-black"
+      style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
+    >
       {/* Background with Berlin skyline */}
       <img
         src="/images/intro.gif"
@@ -82,6 +85,7 @@ export default function IntroScreen() {
           width: "100%",
           height: "100%",
           objectFit: "cover",
+          objectPosition: "center",
           zIndex: 0,
           filter: glitch ? "hue-rotate(180deg) saturate(3)" : "none",
           transform: glitch ? "translate(5px, 2px)" : "none",
