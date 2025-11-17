@@ -89,15 +89,17 @@ export default function IntroScreen() {
         }}
       />
 
-      <div className="z-10 flex flex-col items-center justify-center space-y-8">
+      <div className="z-10 flex flex-col items-center justify-center space-y-8 px-4">
         <button
           onClick={handleStart}
           onTouchStart={handleStart}
-          className={`game-text text-white text-2xl mt-[650px] ${
+          className={`game-text text-white text-xl sm:text-2xl mt-[400px] sm:mt-[650px] ${
             showStart ? "blink" : ""
-          } cursor-pointer bg-transparent border-none`}
+          } cursor-pointer bg-transparent border-none px-8 py-4 sm:px-12 sm:py-6 rounded-lg active:scale-95 transition-transform touch-manipulation`}
           style={{
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
+            minHeight: "60px",
+            minWidth: "200px",
           }}
         >
           Drücke "ENTER" zum Starten

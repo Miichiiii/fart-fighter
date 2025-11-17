@@ -124,32 +124,39 @@ export default function CharacterSelect() {
           <button
             onClick={handleStartFight}
             onTouchStart={handleStartFight}
-            className="text-center text-sm text-gray-400 game-text bg-black/60 py-3 px-6 rounded blink cursor-pointer border-2 border-gray-600 hover:border-orange-500 transition-colors"
+            className="text-center text-base sm:text-lg text-white game-text bg-gradient-to-r from-orange-600 to-orange-500 py-4 px-8 sm:py-5 sm:px-12 rounded-xl blink cursor-pointer border-4 border-orange-400 hover:border-orange-300 active:scale-95 transition-all shadow-lg shadow-orange-500/50 touch-manipulation font-bold"
+            style={{
+              minHeight: "60px",
+              minWidth: isMobile ? "100%" : "250px",
+            }}
           >
-            {isMobile ? "Tippen zum Starten" : "Drücke ENTER zum Starten"}
+            {isMobile ? "🎮 Kampf Starten!" : "⚡ Drücke ENTER zum Starten"}
           </button>
         </div>
 
         {/* Right side - Selected Fighter Details */}
         <div className="flex flex-col items-center game-text bg-black/80 p-4 sm:p-8 lg:p-10 rounded-lg shadow-2xl w-full lg:w-auto max-w-md">
           <div
-            className="relative mb-4 sm:mb-8"
-            style={{ width: "150px", height: "150px" }}
+            className="relative mb-4 sm:mb-8 border-4 border-orange-400 rounded-lg overflow-hidden shadow-xl shadow-orange-500/30"
+            style={{ width: "180px", height: "180px" }}
           >
             <Image
               src={fighters[selectedIndex].portrait || "/placeholder.svg"}
               alt={fighters[selectedIndex].name}
-              width={150}
-              height={150}
-              style={{ width: "150px", height: "150px" }}
+              width={180}
+              height={180}
+              style={{ width: "180px", height: "180px" }}
               className="pixelated object-cover"
               unoptimized
             />
           </div>
 
           <div
-            className="text-xl sm:text-2xl lg:text-3xl text-center text-orange-400 font-bold uppercase"
-            style={{ marginBottom: "40px" }}
+            className="text-2xl sm:text-3xl lg:text-4xl text-center text-orange-400 font-bold uppercase tracking-wider"
+            style={{
+              marginBottom: "40px",
+              textShadow: "0 0 20px rgba(255, 140, 0, 0.6)",
+            }}
           >
             {fighters[selectedIndex].name}
           </div>

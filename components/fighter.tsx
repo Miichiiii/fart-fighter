@@ -96,31 +96,31 @@ export function Fighter({
 
     return (
       <div
-        className="absolute"
+        className="absolute fighter-container"
         style={{
           left: side === "left" ? `${position}px` : "auto",
           right: side === "right" ? `${position}px` : "auto",
-          bottom: state === "jump" ? "80px" : "0px",
+          bottom: state === "jump" ? "100px" : "0px",
           transition:
             state === "jump"
-              ? "bottom 0.4s ease-out, left 0.4s, right 0.4s"
-              : "bottom 0.2s",
+              ? "bottom 0.45s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s, right 0.3s"
+              : "bottom 0.25s ease-out",
           zIndex: zIndex,
           transform: shouldFlip ? "scaleX(-1)" : "",
           willChange: "transform, bottom",
         }}
       >
-        <div className="relative w-32 h-32 sm:w-40 sm:h-40">
+        <div className="relative w-full h-full">
           <Image
             src={spriteToUse || "/placeholder.svg"}
             alt={fighter.name}
-            width={160}
-            height={160}
+            fill
             className="pixelated object-contain object-bottom"
             priority
             loading="eager"
             quality={100}
             unoptimized
+            sizes="(max-width: 480px) 100px, (max-width: 768px) 120px, 160px"
           />
         </div>
       </div>
@@ -154,29 +154,27 @@ export function Fighter({
 
   return (
     <div
-      className="absolute"
+      className="absolute fighter-container"
       style={{
         left: side === "left" ? `${position}px` : "auto",
         right: side === "right" ? `${position}px` : "auto",
-        bottom: state === "jump" ? "80px" : "0px",
+        bottom: state === "jump" ? "100px" : "0px",
         transition:
           state === "jump"
-            ? "bottom 0.4s ease-out, left 0.4s, right 0.4s"
-            : "bottom 0.2s",
+            ? "bottom 0.45s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s, right 0.3s"
+            : "bottom 0.25s ease-out",
         zIndex: zIndex,
         willChange: "transform, bottom",
       }}
     >
       <div
-        className={`relative w-32 h-32 sm:w-40 sm:h-40 ${
-          shouldFlip ? "scale-x-[-1]" : ""
-        }`}
+        className={`relative w-full h-full ${shouldFlip ? "scale-x-[-1]" : ""}`}
         style={{
           transform:
             state === "punch"
-              ? `${side === "right" ? "translateX(-10px)" : "translateX(10px)"}`
+              ? `${side === "right" ? "translateX(-15px)" : "translateX(15px)"}`
               : "none",
-          transition: "transform 0.1s",
+          transition: "transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         <div

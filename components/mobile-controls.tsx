@@ -24,48 +24,69 @@ export function MobileControls({ onAction }: MobileControlsProps) {
   };
 
   const buttonStyle = (action: string) => ({
-    padding: "10px",
-    border: "2px solid #FFD700",
-    borderRadius: "12px",
-    backgroundColor: activeButtons.has(action)
-      ? "#FFD700"
-      : "rgba(26, 26, 26, 0.85)",
+    padding: "0",
+    border: "4px solid #FFD700",
+    borderRadius: "50%",
+    background: activeButtons.has(action)
+      ? "linear-gradient(145deg, #FFD700, #FFA500)"
+      : "linear-gradient(145deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.3))",
+    backdropFilter: "blur(10px)",
     color: activeButtons.has(action) ? "#000" : "#FFD700",
     fontWeight: "bold" as const,
-    fontSize: "12px",
+    fontSize: "16px",
     textAlign: "center" as const,
     userSelect: "none" as const,
     touchAction: "manipulation",
     boxShadow: activeButtons.has(action)
-      ? "0 0 15px rgba(255, 215, 0, 0.9), inset 0 2px 4px rgba(0,0,0,0.3)"
-      : "0 3px 10px rgba(0, 0, 0, 0.8)",
-    transition: "all 0.05s ease",
-    minWidth: "60px",
-    minHeight: "60px",
+      ? "0 0 25px rgba(255, 215, 0, 0.9), inset 0 2px 5px rgba(0,0,0,0.3)"
+      : "0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.3)",
+    transition: "all 0.12s cubic-bezier(0.4, 0, 0.2, 1)",
+    minWidth: "75px",
+    minHeight: "75px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     WebkitTapHighlightColor: "transparent",
     cursor: "pointer",
-    transform: activeButtons.has(action) ? "scale(0.95)" : "scale(1)",
+    transform: activeButtons.has(action) ? "scale(0.92)" : "scale(1)",
   });
 
   const dpadButtonStyle = (action: string) => ({
-    ...buttonStyle(action),
-    minWidth: "70px",
-    minHeight: "70px",
-    fontSize: "24px",
-    borderWidth: "3px",
+    padding: "0",
+    border: "4px solid #FFD700",
+    borderRadius: "15px",
+    background: activeButtons.has(action)
+      ? "linear-gradient(145deg, #FFD700, #FFA500)"
+      : "linear-gradient(145deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.3))",
+    backdropFilter: "blur(10px)",
+    color: activeButtons.has(action) ? "#000" : "#FFD700",
+    fontWeight: "bold" as const,
+    fontSize: "32px",
+    textAlign: "center" as const,
+    userSelect: "none" as const,
+    touchAction: "manipulation",
+    boxShadow: activeButtons.has(action)
+      ? "0 0 25px rgba(255, 215, 0, 0.9), inset 0 2px 5px rgba(0,0,0,0.3)"
+      : "0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.3)",
+    transition: "all 0.12s cubic-bezier(0.4, 0, 0.2, 1)",
+    minWidth: "85px",
+    minHeight: "85px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    WebkitTapHighlightColor: "transparent",
+    cursor: "pointer",
+    transform: activeButtons.has(action) ? "scale(0.92)" : "scale(1)",
   });
 
   return (
     <div
       className="fixed bottom-0 left-0 right-0 pointer-events-none z-50"
       style={{
-        padding: "8px",
-        paddingBottom: "max(20px, env(safe-area-inset-bottom))",
+        padding: "12px",
+        paddingBottom: "max(24px, env(safe-area-inset-bottom))",
         background:
-          "linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%)",
+          "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)",
       }}
     >
       {/* Bottom section - controls */}
@@ -74,12 +95,12 @@ export function MobileControls({ onAction }: MobileControlsProps) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-end",
-          gap: "10px",
+          gap: "15px",
           pointerEvents: "auto",
         }}
       >
         {/* Left side - D-Pad */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <button
               onTouchStart={(e) => {
@@ -91,12 +112,13 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("up");
               }}
               style={dpadButtonStyle("up")}
+              aria-label="Jump"
             >
               ↑
             </button>
           </div>
           <div
-            style={{ display: "flex", justifyContent: "center", gap: "8px" }}
+            style={{ display: "flex", justifyContent: "center", gap: "10px" }}
           >
             <button
               onTouchStart={(e) => {
@@ -108,6 +130,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("left");
               }}
               style={dpadButtonStyle("left")}
+              aria-label="Move Left"
             >
               ←
             </button>
@@ -121,6 +144,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("down");
               }}
               style={dpadButtonStyle("down")}
+              aria-label="Duck"
             >
               ↓
             </button>
@@ -134,6 +158,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("right");
               }}
               style={dpadButtonStyle("right")}
+              aria-label="Move Right"
             >
               →
             </button>
@@ -141,9 +166,9 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         </div>
 
         {/* Right side - Action Buttons */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div
-            style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}
+            style={{ display: "flex", justifyContent: "flex-end", gap: "14px" }}
           >
             <button
               onTouchStart={(e) => {
@@ -155,10 +180,11 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("kick");
               }}
               style={buttonStyle("kick")}
+              aria-label="Kick"
             >
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "14px", marginBottom: "4px" }}>A</div>
-                <div style={{ fontSize: "10px" }}>Tritt</div>
+              <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                <div style={{ fontSize: "20px", fontWeight: "900" }}>A</div>
+                <div style={{ fontSize: "11px", marginTop: "2px" }}>Tritt</div>
               </div>
             </button>
             <button
@@ -171,15 +197,16 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("defence");
               }}
               style={buttonStyle("defence")}
+              aria-label="Defence"
             >
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "14px", marginBottom: "4px" }}>S</div>
-                <div style={{ fontSize: "10px" }}>Block</div>
+              <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                <div style={{ fontSize: "20px", fontWeight: "900" }}>S</div>
+                <div style={{ fontSize: "11px", marginTop: "2px" }}>Block</div>
               </div>
             </button>
           </div>
           <div
-            style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}
+            style={{ display: "flex", justifyContent: "flex-end", gap: "14px" }}
           >
             <button
               onTouchStart={(e) => {
@@ -191,10 +218,11 @@ export function MobileControls({ onAction }: MobileControlsProps) {
                 handleTouchEnd("punch");
               }}
               style={buttonStyle("punch")}
+              aria-label="Punch"
             >
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "14px", marginBottom: "4px" }}>D</div>
-                <div style={{ fontSize: "10px" }}>Schlag</div>
+              <div style={{ textAlign: "center", lineHeight: "1.2" }}>
+                <div style={{ fontSize: "20px", fontWeight: "900" }}>D</div>
+                <div style={{ fontSize: "11px", marginTop: "2px" }}>Schlag</div>
               </div>
             </button>
           </div>

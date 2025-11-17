@@ -180,23 +180,31 @@ export default function WinnerScreen() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center mt-4 sm:mt-8 gap-3 sm:gap-4 w-full max-w-md pb-safe">
+        <div className="flex flex-col items-center mt-4 sm:mt-8 gap-4 sm:gap-5 w-full max-w-md pb-safe px-4">
           <button
             onClick={startNextRound}
             onTouchStart={startNextRound}
-            className={`game-text text-sm sm:text-base lg:text-xl cursor-pointer bg-black/60 py-2 sm:py-3 px-4 sm:px-6 rounded border-2 border-gray-600 active:border-orange-500 active:scale-95 transition-all touch-manipulation w-full ${
+            className={`game-text text-lg sm:text-xl lg:text-2xl font-bold cursor-pointer bg-gradient-to-r from-orange-600 to-orange-500 py-4 sm:py-5 px-6 sm:px-8 rounded-xl border-4 border-orange-400 active:border-orange-300 active:scale-95 transition-all touch-manipulation w-full shadow-2xl shadow-orange-500/50 ${
               showContinue ? "blink" : "opacity-0"
             }`}
+            style={{
+              minHeight: "70px",
+              textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+            }}
           >
-            {winner === "player" ? "NÄCHSTE RUNDE" : "NOCHMAL SPIELEN"}
+            {winner === "player" ? "⚡ NÄCHSTE RUNDE" : "🔄 NOCHMAL SPIELEN"}
           </button>
 
           {winner === "player" && (
             <button
               onClick={() => router.push("/")}
               onTouchStart={() => router.push("/")}
-              className="game-text text-xs sm:text-sm lg:text-lg cursor-pointer bg-black/60 py-2 px-3 sm:px-4 rounded border-2 border-gray-600 active:border-orange-500 active:scale-95 transition-all touch-manipulation w-full"
-              style={{ color: "#5D1A11" }}
+              className="game-text text-base sm:text-lg lg:text-xl font-bold cursor-pointer bg-black/80 py-3 sm:py-4 px-5 sm:px-6 rounded-xl border-3 border-gray-500 active:border-gray-300 active:scale-95 transition-all touch-manipulation w-full shadow-xl"
+              style={{
+                color: "#FFD700",
+                minHeight: "60px",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+              }}
             >
               HAUPTMENÜ
             </button>
