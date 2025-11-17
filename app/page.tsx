@@ -14,6 +14,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSoundContext } from "@/components/sound-context";
 import { initTelegramWebApp, useTelegramHaptic } from "@/lib/telegram";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function IntroScreen() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function IntroScreen() {
   const glitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { setCurrentTrack } = useSoundContext();
   const { impact } = useTelegramHaptic();
+  const isMobile = useIsMobile();
 
   const handleStart = () => {
     impact("medium");
@@ -93,23 +95,23 @@ export default function IntroScreen() {
         }}
       />
 
-      <div className="z-10 flex flex-col items-center justify-center space-y-8 px-4">
+      <div className="z-10 flex flex-col items-center justify-center space-y-1 sm:space-y-2 lg:space-y-4 px-2 sm:px-4 w-full max-w-2xl">
         <button
           onClick={handleStart}
           onTouchStart={handleStart}
-          className={`game-text text-white text-xl sm:text-2xl mt-[400px] sm:mt-[650px] ${
+          className={`game-text text-white text-xs sm:text-sm lg:text-lg xl:text-xl mt-2 sm:mt-4 lg:mt-8 xl:mt-16 2xl:mt-[80px] ${
             showStart ? "blink" : ""
-          } cursor-pointer bg-transparent border-none px-8 py-4 sm:px-12 sm:py-6 rounded-lg active:scale-95 transition-transform touch-manipulation`}
+          } cursor-pointer bg-transparent border-none px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-lg active:scale-95 transition-transform touch-manipulation`}
           style={{
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
-            minHeight: "60px",
-            minWidth: "200px",
+            minHeight: "35px",
+            minWidth: "140px",
           }}
         >
-          Drücke "ENTER" zum Starten
+          🎮 Tippen zum Starten
         </button>
 
-        <div className="text-white text-xs sm:text-sm text-center space-y-1 mt-[100px] sm:mt-[200px] px-2">
+        <div className="text-white text-xs text-center space-y-1 mt-1 sm:mt-2 lg:mt-4 xl:mt-8 2xl:mt-[40px] px-1 max-w-xs sm:max-w-sm lg:max-w-md">
           <div
             style={{
               textShadow:
@@ -119,7 +121,7 @@ export default function IntroScreen() {
             Game Made by - Michael Medvidov
           </div>
           <div
-            className="hidden sm:block"
+            className="hidden sm:block text-xs"
             style={{
               textShadow:
                 "2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.7)",
@@ -129,6 +131,7 @@ export default function IntroScreen() {
             & pixverse.ai
           </div>
           <div
+            className="text-xs"
             style={{
               textShadow:
                 "2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.7)",

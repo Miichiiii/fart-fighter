@@ -78,23 +78,21 @@ export default function CharacterSelect() {
         <div className="absolute inset-0 bg-black/60" />
       </div>
 
-      <div className="z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 w-full max-w-7xl px-4 sm:px-8 lg:px-12 py-8">
-        {/* Left side - Fighter Grid */}
-        <div className="flex flex-col w-full lg:w-auto">
+      <div className="z-10 flex flex-col items-center justify-center gap-1 sm:gap-2 lg:gap-3 w-full max-w-4xl px-1 sm:px-2 lg:px-4 py-1 sm:py-2 lg:py-4">
+        {/* Fighter Grid - kompakter für mobile */}
+        <div className="flex flex-col w-full items-center">
           <h2
-            className="game-title text-xl sm:text-2xl lg:text-3xl text-center"
-            style={{ marginBottom: "20px" }}
+            className="game-title text-sm sm:text-base lg:text-lg xl:text-xl text-center mb-1 sm:mb-2"
           >
             Wähle Deinen Furz-Kämpfer
           </h2>
           <div
-            className="grid grid-cols-3 sm:grid-cols-2 gap-3 sm:gap-6"
-            style={{ marginBottom: "40px" }}
+            className="grid grid-cols-3 gap-0.5 sm:gap-1 lg:gap-2 mb-1 sm:mb-2"
           >
             {fighters.map((fighter, index) => (
               <button
                 key={fighter.id}
-                className={`relative cursor-pointer transition-all border-2 sm:border-4 active:scale-95 touch-manipulation ${
+                className={`relative cursor-pointer transition-all border-0.5 sm:border-1 lg:border-2 active:scale-95 touch-manipulation ${
                   selectedIndex === index
                     ? "border-orange-500 shadow-lg shadow-orange-500/50"
                     : "border-gray-700 active:border-gray-500"
@@ -103,12 +101,15 @@ export default function CharacterSelect() {
                   width: "100%",
                   aspectRatio: "1",
                   padding: 0,
-                  maxWidth: "100px",
+                  maxWidth: isMobile ? "55px" : "70px",
+                  minWidth: isMobile ? "45px" : "60px",
                 }}
                 onClick={() => {
+                  selection();
                   setSelectedIndex(index);
                 }}
                 onTouchStart={() => {
+                  selection();
                   setSelectedIndex(index);
                 }}
               >
@@ -116,7 +117,7 @@ export default function CharacterSelect() {
                   src={fighter.portrait || "/placeholder.svg"}
                   alt={fighter.name}
                   fill
-                  sizes="(max-width: 640px) 80px, 100px"
+                  sizes="(max-width: 640px) 45px, (max-width: 1024px) 60px, 70px"
                   className="pixelated object-cover"
                   unoptimized
                 />
@@ -127,58 +128,62 @@ export default function CharacterSelect() {
           <button
             onClick={handleStartFight}
             onTouchStart={handleStartFight}
-            className="text-center text-base sm:text-lg text-white game-text bg-gradient-to-r from-orange-600 to-orange-500 py-4 px-8 sm:py-5 sm:px-12 rounded-xl blink cursor-pointer border-4 border-orange-400 hover:border-orange-300 active:scale-95 transition-all shadow-lg shadow-orange-500/50 touch-manipulation font-bold"
+            className="text-center text-xs sm:text-sm lg:text-base text-white game-text bg-gradient-to-r from-orange-600 to-orange-500 py-1.5 px-3 sm:py-2 sm:px-4 lg:py-3 lg:px-6 rounded-md blink cursor-pointer border-0.5 sm:border-1 lg:border-2 border-orange-400 hover:border-orange-300 active:scale-95 transition-all shadow-lg shadow-orange-500/50 touch-manipulation font-bold"
             style={{
-              minHeight: "60px",
-              minWidth: isMobile ? "100%" : "250px",
+              minHeight: "35px",
+              minWidth: isMobile ? "100%" : "160px",
+              maxWidth: isMobile ? "220px" : "180px",
             }}
           >
-            {isMobile ? "🎮 Kampf Starten!" : "⚡ Drücke ENTER zum Starten"}
+            🎮 Kampf Starten
           </button>
         </div>
 
-        {/* Right side - Selected Fighter Details */}
-        <div className="flex flex-col items-center game-text bg-black/80 p-4 sm:p-8 lg:p-10 rounded-lg shadow-2xl w-full lg:w-auto max-w-md">
+        {/* Selected Fighter Details - kompakter für mobile */}
+        <div className="flex flex-col items-center game-text bg-black/90 p-1.5 sm:p-2 lg:p-3 rounded-lg shadow-2xl w-full max-w-xs sm:max-w-sm">
           <div
-            className="relative mb-4 sm:mb-8 border-4 border-orange-400 rounded-lg overflow-hidden shadow-xl shadow-orange-500/30"
-            style={{ width: "180px", height: "180px" }}
+            className="relative mb-1 sm:mb-2 border-0.5 sm:border-1 lg:border-2 border-orange-400 rounded-lg overflow-hidden shadow-xl shadow-orange-500/30"
+            style={{
+              width: isMobile ? "80px" : "110px",
+              height: isMobile ? "80px" : "110px"
+            }}
           >
             <Image
               src={fighters[selectedIndex].portrait || "/placeholder.svg"}
               alt={fighters[selectedIndex].name}
-              width={180}
-              height={180}
-              style={{ width: "180px", height: "180px" }}
+              width={isMobile ? 80 : 110}
+              height={isMobile ? 80 : 110}
+              style={{
+                width: isMobile ? "80px" : "110px",
+                height: isMobile ? "80px" : "110px"
+              }}
               className="pixelated object-cover"
               unoptimized
             />
           </div>
 
           <div
-            className="text-2xl sm:text-3xl lg:text-4xl text-center text-orange-400 font-bold uppercase tracking-wider"
+            className="text-xs sm:text-sm lg:text-base text-center text-orange-400 font-bold uppercase tracking-wider mb-0.5 sm:mb-1"
             style={{
-              marginBottom: "40px",
-              textShadow: "0 0 20px rgba(255, 140, 0, 0.6)",
+              textShadow: "0 0 10px rgba(255, 140, 0, 0.6)",
             }}
           >
             {fighters[selectedIndex].name}
           </div>
 
           <div
-            className="text-xs text-yellow-300 uppercase text-center"
-            style={{ marginBottom: "10px" }}
+            className="text-xs text-yellow-300 uppercase text-center mb-0.5"
           >
             Spezial-Attacke
           </div>
 
           <div
-            className="text-sm sm:text-base lg:text-lg text-yellow-400 font-bold text-center bg-yellow-500/20 px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded"
-            style={{ marginBottom: "40px" }}
+            className="text-xs sm:text-sm text-yellow-400 font-bold text-center bg-yellow-500/20 px-1.5 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded mb-0.5 sm:mb-1"
           >
             {fighters[selectedIndex].specialMove}
           </div>
 
-          <div className="text-xs sm:text-sm text-gray-300 text-center max-w-md leading-relaxed italic bg-black/40 px-4 sm:px-6 py-3 sm:py-4 rounded">
+          <div className="text-xs text-gray-300 text-center max-w-xs leading-tight italic bg-black/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
             "{fighters[selectedIndex].description}"
           </div>
         </div>

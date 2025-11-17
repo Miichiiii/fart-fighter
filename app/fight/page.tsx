@@ -183,7 +183,7 @@ export default function FightScreen() {
       setIsPlayerWalking(true);
 
       // Calculate new position
-      const newPosition = Math.max(playerPosition - 20, 50);
+      const newPosition = Math.max(playerPosition - 20, 10);
 
       // Check if this movement would cause collision
       const playerRight = newPosition + FIGHTER_WIDTH;
@@ -214,10 +214,7 @@ export default function FightScreen() {
       setIsPlayerWalking(true);
 
       // Calculate new position
-      const newPosition = Math.min(
-        playerPosition + 20,
-        window.innerWidth - 150
-      );
+      const newPosition = Math.min(playerPosition + 20, window.innerWidth - 60);
 
       // Check if this movement would cause collision
       const playerRight = newPosition + FIGHTER_WIDTH;
@@ -291,11 +288,9 @@ export default function FightScreen() {
             // Punch
             setCpuState("punch");
 
-            // Check if hit - CANNOT hit jumping player with punch
-            // If player is defending, they take reduced damage (1%)
+            // Check if hit - only when colliding
             if (
-              Math.abs(cpuCenterX - playerCenterX) < 140 &&
-              playerState !== "jump" &&
+              checkCollision() &&
               !hitCooldownRef.current &&
               // CPU must be facing the player to hit
               ((cpuCenterX < playerCenterX && isCpuFacingLeft) ||
@@ -339,12 +334,9 @@ export default function FightScreen() {
             // Kick
             setCpuState("kick");
 
-            // Check if hit - CANNOT hit ducking player with kick
-            // If player is defending, they take reduced damage (1%)
+            // Check if hit - only when colliding
             if (
-              Math.abs(cpuCenterX - playerCenterX) < 170 &&
-              playerState !== "jump" &&
-              playerState !== "duck" && // Added check for ducking
+              checkCollision() &&
               !hitCooldownRef.current &&
               // CPU must be facing the player to hit
               ((cpuCenterX < playerCenterX && isCpuFacingLeft) ||
@@ -413,8 +405,8 @@ export default function FightScreen() {
 
           // Calculate new position
           const newPosition = Math.max(
-            50,
-            Math.min(window.innerWidth - 150, prev + direction * 15)
+            10,
+            Math.min(window.innerWidth - 60, prev + direction * 15)
           );
 
           // Check if this movement would cause collision
@@ -444,8 +436,8 @@ export default function FightScreen() {
 
           // Calculate new position
           const newPosition = Math.max(
-            50,
-            Math.min(window.innerWidth - 150, prev + direction * 15)
+            10,
+            Math.min(window.innerWidth - 60, prev + direction * 15)
           );
 
           // Check if this movement would cause collision
@@ -616,7 +608,7 @@ export default function FightScreen() {
           // Calculate new position
           const newPosition = Math.min(
             playerPosition + 10,
-            window.innerWidth - 150
+            window.innerWidth - 60
           );
 
           // Check if this movement would cause collision
@@ -634,7 +626,7 @@ export default function FightScreen() {
           playerState !== "defence" &&
           playerState !== "duck"
         ) {
-          setPlayerPosition((prev) => Math.max(prev - 10, 50));
+          setPlayerPosition((prev) => Math.max(prev - 10, 10));
         }
       }, 50); // Move every 50ms for smoother continuous movement
     } else {
@@ -686,13 +678,13 @@ export default function FightScreen() {
         direction = "left";
         setIsPlayerFacingLeft(true);
         // Move left while jumping
-        setPlayerPosition((prev) => Math.max(prev - 50, 50));
+        setPlayerPosition((prev) => Math.max(prev - 50, 10));
       } else if (rightActive) {
         direction = "right";
         setIsPlayerFacingLeft(false);
         // Move right while jumping
         setPlayerPosition((prev) =>
-          Math.min(prev + 50, window.innerWidth - 150)
+          Math.min(prev + 50, window.innerWidth - 60)
         );
       }
 
@@ -729,13 +721,13 @@ export default function FightScreen() {
       // Stop walking animation during punch
       setIsPlayerWalking(false);
 
-      // Check if hit - improved hit detection with slightly reduced area
+      // Check if hit - only when colliding
       const cpuCenterX = getCpuCenterX();
       const playerCenterX = getPlayerCenterX();
 
-      // Only allow hits when player is close to CPU and facing the right direction
+      // Only allow hits when colliding and player is facing the right direction
       if (
-        Math.abs(cpuCenterX - playerCenterX) < 140 && // Reduced hit area
+        checkCollision() &&
         cpuState !== "jump" && // Can't hit jumping CPU (dodge)
         !hitCooldownRef.current &&
         // Player must be facing the CPU to hit
@@ -787,13 +779,13 @@ export default function FightScreen() {
         setIsPlayerWalking(false);
       }
 
-      // Check if hit - improved hit detection with slightly reduced area
+      // Check if hit - only when colliding
       const cpuCenterX = getCpuCenterX();
       const playerCenterX = getPlayerCenterX();
 
-      // Only allow hits when player is close to CPU and facing the right direction
+      // Only allow hits when colliding and player is facing the right direction
       if (
-        Math.abs(cpuCenterX - playerCenterX) < 170 && // Reduced hit area
+        checkCollision() &&
         cpuState !== "jump" && // Can't hit jumping CPU
         (isJumpKick || cpuState !== "duck") && // Regular kick can't hit ducking CPU, but jump kick can
         !hitCooldownRef.current &&
@@ -915,21 +907,21 @@ export default function FightScreen() {
         />
       )}
 
-      {/* Gameplay Area - Top 70% */}
+      {/* Gameplay Area - Mehr Platz für Fighter auf mobile (80% vs 75%) */}
       <div
         className="gameplay-area relative w-full flex flex-col"
         style={{
-          height: "70%",
-          minHeight: "70%",
-          maxHeight: "70%",
+          height: isMobile ? "80%" : "70%",
+          minHeight: isMobile ? "80%" : "70%",
+          maxHeight: isMobile ? "80%" : "70%",
         }}
       >
-        {/* Health bars - top of gameplay area */}
+        {/* Health bars - noch kompakter für mobile */}
         <div
-          className="w-full px-2 sm:px-4 md:px-8 flex justify-between gap-2 sm:gap-4 z-20"
+          className="w-full px-0.5 sm:px-1 md:px-2 lg:px-4 flex justify-between gap-0.5 sm:gap-1 md:gap-2 z-20"
           style={{
-            paddingTop: "max(10px, env(safe-area-inset-top))",
-            paddingBottom: "10px",
+            paddingTop: "max(2px, env(safe-area-inset-top))",
+            paddingBottom: "2px",
           }}
         >
           <PowerBar health={playerHealth} name={playerFighter.name} />
@@ -975,27 +967,27 @@ export default function FightScreen() {
         ></div>
       </div>
 
-      {/* Controls Area - Bottom 30% */}
+      {/* Controls Area - Weniger Platz für mobile (20% vs 25%) */}
       <div
         className="controls-area relative w-full flex flex-col justify-center items-center"
         style={{
-          height: "30%",
-          minHeight: "30%",
-          maxHeight: "30%",
+          height: isMobile ? "20%" : "30%",
+          minHeight: isMobile ? "20%" : "30%",
+          maxHeight: isMobile ? "20%" : "30%",
           background:
             "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
         }}
       >
         {/* Desktop controls help */}
         {!isMobile && (
-          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 z-10">
             <FightControls />
           </div>
         )}
 
-        {/* Mobile touch controls - fixed at bottom */}
+        {/* Mobile touch controls - kompakter für mobile */}
         {isMobile && (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center px-1">
             <MobileControls onAction={handleMobileAction} />
           </div>
         )}
