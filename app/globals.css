@@ -344,7 +344,27 @@ body {
   }
 }
 
-/* Health bar mobile optimization */
+/* Game layout specific styles */
+.gameplay-area {
+  position: relative;
+  overflow: hidden;
+}
+
+.controls-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure proper z-indexing for game elements */
+.gameplay-area .fighter-container {
+  z-index: 15;
+}
+
+.gameplay-area .power-bar {
+  z-index: 20;
+} /* Health bar mobile optimization */
 @media (max-width: 768px) {
   .power-bar {
     height: 16px;

@@ -81,27 +81,19 @@ export function MobileControls({ onAction }: MobileControlsProps) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 pointer-events-none z-50"
+      className="w-full h-full flex items-center justify-center px-4"
       style={{
-        padding: "12px",
-        paddingBottom: "max(24px, env(safe-area-inset-bottom))",
-        background:
-          "linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, transparent 100%)",
+        paddingBottom: "max(16px, env(safe-area-inset-bottom))",
       }}
     >
       {/* Bottom section - controls */}
       <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-          gap: "15px",
-          pointerEvents: "auto",
-        }}
+        className="flex justify-between items-end w-full max-w-lg"
+        style={{ gap: "20px" }}
       >
         {/* Left side - D-Pad */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="flex flex-col gap-3">
+          <div className="flex justify-center">
             <button
               onTouchStart={(e) => {
                 e.preventDefault();
@@ -117,9 +109,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
               ↑
             </button>
           </div>
-          <div
-            style={{ display: "flex", justifyContent: "center", gap: "10px" }}
-          >
+          <div className="flex justify-center gap-3">
             <button
               onTouchStart={(e) => {
                 e.preventDefault();
@@ -166,10 +156,8 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         </div>
 
         {/* Right side - Action Buttons */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-          <div
-            style={{ display: "flex", justifyContent: "flex-end", gap: "14px" }}
-          >
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-end gap-4">
             <button
               onTouchStart={(e) => {
                 e.preventDefault();
@@ -182,9 +170,9 @@ export function MobileControls({ onAction }: MobileControlsProps) {
               style={buttonStyle("kick")}
               aria-label="Kick"
             >
-              <div style={{ textAlign: "center", lineHeight: "1.2" }}>
-                <div style={{ fontSize: "20px", fontWeight: "900" }}>A</div>
-                <div style={{ fontSize: "11px", marginTop: "2px" }}>Tritt</div>
+              <div className="text-center leading-tight">
+                <div className="text-xl font-black">A</div>
+                <div className="text-xs mt-1">Tritt</div>
               </div>
             </button>
             <button
@@ -199,15 +187,13 @@ export function MobileControls({ onAction }: MobileControlsProps) {
               style={buttonStyle("defence")}
               aria-label="Defence"
             >
-              <div style={{ textAlign: "center", lineHeight: "1.2" }}>
-                <div style={{ fontSize: "20px", fontWeight: "900" }}>S</div>
-                <div style={{ fontSize: "11px", marginTop: "2px" }}>Block</div>
+              <div className="text-center leading-tight">
+                <div className="text-xl font-black">S</div>
+                <div className="text-xs mt-1">Block</div>
               </div>
             </button>
           </div>
-          <div
-            style={{ display: "flex", justifyContent: "flex-end", gap: "14px" }}
-          >
+          <div className="flex justify-end gap-4">
             <button
               onTouchStart={(e) => {
                 e.preventDefault();
@@ -220,9 +206,9 @@ export function MobileControls({ onAction }: MobileControlsProps) {
               style={buttonStyle("punch")}
               aria-label="Punch"
             >
-              <div style={{ textAlign: "center", lineHeight: "1.2" }}>
-                <div style={{ fontSize: "20px", fontWeight: "900" }}>D</div>
-                <div style={{ fontSize: "11px", marginTop: "2px" }}>Schlag</div>
+              <div className="text-center leading-tight">
+                <div className="text-xl font-black">D</div>
+                <div className="text-xs mt-1">Schlag</div>
               </div>
             </button>
           </div>

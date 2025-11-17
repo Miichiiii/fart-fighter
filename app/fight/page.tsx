@@ -894,10 +894,10 @@ export default function FightScreen() {
 
   return (
     <div
-      className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden"
+      className="relative w-full h-full flex flex-col overflow-hidden"
       style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
     >
-      {/* Background */}
+      {/* Background - full screen */}
       {stageBackground && (
         <img
           src={stageBackground}
@@ -914,20 +914,30 @@ export default function FightScreen() {
           }}
         />
       )}
-      <div className="absolute bottom-0 w-full h-20 bg-black/50 z-0"></div>
 
-      <div className="z-10 flex flex-col items-center justify-start w-full h-full">
-        {/* Health bars */}
+      {/* Gameplay Area - Top 70% */}
+      <div
+        className="gameplay-area relative w-full flex flex-col"
+        style={{
+          height: "70%",
+          minHeight: "70%",
+          maxHeight: "70%",
+        }}
+      >
+        {/* Health bars - top of gameplay area */}
         <div
-          className="w-full px-2 sm:px-4 md:px-8 flex justify-between gap-2 sm:gap-4"
-          style={{ paddingTop: "max(10px, env(safe-area-inset-top))" }}
+          className="w-full px-2 sm:px-4 md:px-8 flex justify-between gap-2 sm:gap-4 z-20"
+          style={{
+            paddingTop: "max(10px, env(safe-area-inset-top))",
+            paddingBottom: "10px",
+          }}
         >
           <PowerBar health={playerHealth} name={playerFighter.name} />
           <PowerBar health={cpuHealth} name={cpuFighter.name} reversed />
         </div>
 
-        {/* Fight area */}
-        <div className="relative flex-1 w-full">
+        {/* Fight arena - main gameplay space */}
+        <div className="relative flex-1 w-full overflow-hidden">
           {/* Player fighter */}
           <Fighter
             fighter={playerFighter}
@@ -958,12 +968,38 @@ export default function FightScreen() {
           />
         </div>
 
-        {/* Controls help */}
-        <FightControls />
+        {/* Visual separator line */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent z-10"
+          style={{ boxShadow: "0 0 10px rgba(255, 140, 0, 0.5)" }}
+        ></div>
       </div>
 
-      {/* Mobile touch controls */}
-      {isMobile && <MobileControls onAction={handleMobileAction} />}
+      {/* Controls Area - Bottom 30% */}
+      <div
+        className="controls-area relative w-full flex flex-col justify-center items-center"
+        style={{
+          height: "30%",
+          minHeight: "30%",
+          maxHeight: "30%",
+          background:
+            "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
+        }}
+      >
+        {/* Desktop controls help */}
+        {!isMobile && (
+          <div className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10">
+            <FightControls />
+          </div>
+        )}
+
+        {/* Mobile touch controls - fixed at bottom */}
+        {isMobile && (
+          <div className="w-full h-full flex items-center justify-center">
+            <MobileControls onAction={handleMobileAction} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
