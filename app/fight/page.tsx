@@ -147,21 +147,22 @@ export default function FightScreen() {
   const getCpuCenterX = () => window.innerWidth - cpuPosition - 70;
 
   // Fighter collision detection - define collision boxes
-  const FIGHTER_WIDTH = 100; // Width of fighter collision box
-  const PLAYER2_FIGHTER_WIDTH = 90; // Slightly smaller hit area for Player 2
+  const FIGHTER_WIDTH = 130; // Width of fighter collision box - erweitert für bessere Hit-Detection
+  const PLAYER2_FIGHTER_WIDTH = 120; // Slightly smaller hit area for Player 2 - erweitert
+  const HIT_DETECTION_BUFFER = 30; // Extra buffer für großzügigere Hit-Detection
 
-  // Check if fighters are colliding
+  // Check if fighters are colliding - verbesserte Erkennung
   const checkCollision = () => {
-    // Only check collision when both fighters are on the ground (not jumping)
-    if (playerState === "jump" || cpuState === "jump") {
+    // Jump kicks können auch in der Luft treffen
+    if (playerState === "jump" && !isPlayerJumpKicking && cpuState === "jump") {
       return false;
     }
 
     const playerRight = playerPosition + FIGHTER_WIDTH;
     const cpuLeft = window.innerWidth - cpuPosition - PLAYER2_FIGHTER_WIDTH;
 
-    // If player's right edge is past CPU's left edge, they're colliding
-    return playerRight >= cpuLeft;
+    // Erweiterte Hit-Detection mit Buffer für flüssigere Erkennung
+    return playerRight + HIT_DETECTION_BUFFER >= cpuLeft;
   };
 
   // Handle single tap movement for player
@@ -313,7 +314,7 @@ export default function FightScreen() {
               hitCooldownRef.current = true;
               setTimeout(() => {
                 hitCooldownRef.current = false;
-              }, 500);
+              }, 300); // Reduziert von 500ms auf 300ms für flüssigere Hit-Detection
 
               if (
                 playerHealth -
@@ -359,7 +360,7 @@ export default function FightScreen() {
               hitCooldownRef.current = true;
               setTimeout(() => {
                 hitCooldownRef.current = false;
-              }, 500);
+              }, 300); // Reduziert von 500ms auf 300ms für flüssigere Hit-Detection
 
               if (
                 playerHealth -
@@ -749,7 +750,7 @@ export default function FightScreen() {
         hitCooldownRef.current = true;
         setTimeout(() => {
           hitCooldownRef.current = false;
-        }, 500);
+        }, 300); // Reduziert von 500ms auf 300ms für flüssigere Hit-Detection
 
         if (cpuHealth - (cpuState === "defence" ? 1 : 5) <= 0) {
           endGame("player");
@@ -810,7 +811,7 @@ export default function FightScreen() {
         hitCooldownRef.current = true;
         setTimeout(() => {
           hitCooldownRef.current = false;
-        }, 500);
+        }, 300); // Reduziert von 500ms auf 300ms für flüssigere Hit-Detection
 
         const damageDealt = cpuState === "defence" ? 1 : isJumpKick ? 15 : 10;
         if (cpuHealth - damageDealt <= 0) {
@@ -907,13 +908,13 @@ export default function FightScreen() {
         />
       )}
 
-      {/* Gameplay Area - Mehr Platz für Fighter auf mobile (80% vs 75%) */}
+      {/* Gameplay Area - kompakter für mobile (75% statt 85%) */}
       <div
         className="gameplay-area relative w-full flex flex-col"
         style={{
-          height: isMobile ? "80%" : "70%",
-          minHeight: isMobile ? "80%" : "70%",
-          maxHeight: isMobile ? "80%" : "70%",
+          height: isMobile ? "75%" : "70%",
+          minHeight: isMobile ? "75%" : "70%",
+          maxHeight: isMobile ? "75%" : "70%",
         }}
       >
         {/* Health bars - noch kompakter für mobile */}
@@ -967,13 +968,13 @@ export default function FightScreen() {
         ></div>
       </div>
 
-      {/* Controls Area - Weniger Platz für mobile (20% vs 25%) */}
+      {/* Controls Area - mehr Platz für mobile (25% statt 15%) */}
       <div
         className="controls-area relative w-full flex flex-col justify-center items-center"
         style={{
-          height: isMobile ? "20%" : "30%",
-          minHeight: isMobile ? "20%" : "30%",
-          maxHeight: isMobile ? "20%" : "30%",
+          height: isMobile ? "25%" : "30%",
+          minHeight: isMobile ? "25%" : "30%",
+          maxHeight: isMobile ? "25%" : "30%",
           background:
             "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
         }}

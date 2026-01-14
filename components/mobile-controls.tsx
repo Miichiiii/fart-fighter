@@ -254,16 +254,16 @@ export function MobileControls({ onAction }: MobileControlsProps) {
     }
   }, [joystick.isActive, joystick.position]);
 
-  // Dynamic button sizing based on screen size - kompakter für mobile
+  // Dynamic button sizing based on screen size - größer für mobile
   const getButtonSize = useCallback(() => {
-    if (typeof window === "undefined") return { min: 55, max: 70 };
+    if (typeof window === "undefined") return { min: 70, max: 90 };
 
     const isSmallScreen = window.innerWidth < 400;
     const isLargeScreen = window.innerWidth > 800;
 
-    if (isSmallScreen) return { min: 50, max: 65 };
-    if (isLargeScreen) return { min: 65, max: 80 };
-    return { min: 55, max: 70 };
+    if (isSmallScreen) return { min: 65, max: 85 };
+    if (isLargeScreen) return { min: 80, max: 100 };
+    return { min: 70, max: 90 };
   }, []);
 
   const buttonSize = getButtonSize();
@@ -278,7 +278,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
     backdropFilter: "blur(8px)",
     color: activeButtons.has(action) ? "#000" : "#FFD700",
     fontWeight: "bold" as const,
-    fontSize: "clamp(12px, 3.5vw, 16px)",
+    fontSize: "clamp(14px, 4vw, 18px)",
     textAlign: "center" as const,
     userSelect: "none" as const,
     touchAction: "manipulation",
@@ -299,10 +299,10 @@ export function MobileControls({ onAction }: MobileControlsProps) {
   });
 
   const joystickStyle = {
-    width: "clamp(95px, 25vw, 130px)",
-    height: "clamp(95px, 25vw, 130px)",
-    maxWidth: "140px",
-    maxHeight: "140px",
+    width: "clamp(120px, 28vw, 160px)",
+    height: "clamp(120px, 28vw, 160px)",
+    maxWidth: "180px",
+    maxHeight: "180px",
     borderRadius: "50%",
     background:
       "linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.15))",
@@ -319,10 +319,10 @@ export function MobileControls({ onAction }: MobileControlsProps) {
   };
 
   const joystickKnobStyle = {
-    width: "clamp(40px, 10vw, 50px)",
-    height: "clamp(40px, 10vw, 50px)",
-    maxWidth: "60px",
-    maxHeight: "60px",
+    width: "clamp(50px, 12vw, 65px)",
+    height: "clamp(50px, 12vw, 65px)",
+    maxWidth: "75px",
+    maxHeight: "75px",
     borderRadius: "50%",
     background: joystick.isActive
       ? "linear-gradient(145deg, #FFD700, #FFA500)"

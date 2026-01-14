@@ -73,7 +73,7 @@ export default function IntroScreen() {
 
   return (
     <div
-      className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden bg-black"
+      className="relative w-full h-full flex flex-col overflow-hidden bg-black"
       style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
     >
       {/* Background with Berlin skyline */}
@@ -95,11 +95,17 @@ export default function IntroScreen() {
         }}
       />
 
-      <div className="z-10 flex flex-col items-center justify-center space-y-1 sm:space-y-2 lg:space-y-4 px-2 sm:px-4 w-full max-w-2xl">
+      {/* Main content - centered */}
+      <div className="flex-1 flex items-center justify-center">
+        {/* Empty space - background fills this */}
+      </div>
+
+      {/* Footer content - ganz unten */}
+      <div className="z-10 flex flex-col items-center justify-end pb-4 sm:pb-6 lg:pb-8 px-2 sm:px-4 w-full max-w-2xl">
         <button
           onClick={handleStart}
           onTouchStart={handleStart}
-          className={`game-text text-white text-xs sm:text-sm lg:text-lg xl:text-xl mt-2 sm:mt-4 lg:mt-8 xl:mt-16 2xl:mt-[80px] ${
+          className={`game-text text-white text-xs sm:text-sm lg:text-lg xl:text-xl mb-2 sm:mb-3 lg:mb-4 ${
             showStart ? "blink" : ""
           } cursor-pointer bg-transparent border-none px-3 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4 rounded-lg active:scale-95 transition-transform touch-manipulation`}
           style={{
@@ -111,7 +117,7 @@ export default function IntroScreen() {
           🎮 Tippen zum Starten
         </button>
 
-        <div className="text-white text-xs text-center space-y-1 mt-1 sm:mt-2 lg:mt-4 xl:mt-8 2xl:mt-[40px] px-1 max-w-xs sm:max-w-sm lg:max-w-md">
+        <div className="text-white text-xs text-center space-y-1 px-1 max-w-xs sm:max-w-sm lg:max-w-md">
           <div
             style={{
               textShadow:
