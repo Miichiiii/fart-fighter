@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { Fighter as FighterType } from "@/lib/fighters";
 
 interface FighterProps {
@@ -36,16 +36,23 @@ export function Fighter({
   // Add state for walking animation
   const [showWalkFrame, setShowWalkFrame] = useState(false);
 
-  // Walking animation effect
+  // Walking animation effect - optimized with requestAnimationFrame
   useEffect(() => {
     if (!isWalking || !fighter.walkSprite) return;
 
-    // Toggle between stand and walk sprites every 150ms
-    const walkInterval = setInterval(() => {
-      setShowWalkFrame((prev) => !prev);
-    }, 150);
+    let animationId: number;
+    let lastToggle = 0;
 
-    return () => clearInterval(walkInterval);
+    const animate = (timestamp: number) => {
+      if (timestamp - lastToggle >= 150) {
+        setShowWalkFrame((prev) => !prev);
+        lastToggle = timestamp;
+      }
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
   }, [isWalking, fighter.walkSprite]);
 
   // Check if fighter uses a single sprite or a sprite sheet
@@ -55,45 +62,47 @@ export function Fighter({
   // Victorious fighters should appear in front of defeated fighters
   const zIndex = isVictorious ? 20 : isDefeated ? 5 : 10;
 
+  // Memoized sprite selection for single sprites
+  const spriteToUse = useMemo(() => {
+    if (!isSingleSprite) return fighter.sprite;
+
+    if (isDefeated && fighter.lostSprite) return fighter.lostSprite;
+    if (isVictorious && fighter.wonSprite) return fighter.wonSprite;
+    if (isHit && !isDefending && fighter.hitSprite) return fighter.hitSprite;
+    if (state === "punch" && fighter.punchSprite) return fighter.punchSprite;
+    if (state === "kick" && fighter.kickSprite) return fighter.kickSprite;
+    if (state === "jump") {
+      if (isJumpKicking && fighter.kickSprite) return fighter.kickSprite;
+      return fighter.jumpSprite || fighter.sprite;
+    }
+    if ((state === "defence" || isDefending) && fighter.defenceSprite)
+      return fighter.defenceSprite;
+    if (state === "duck" && fighter.duckSprite) return fighter.duckSprite;
+    if (isWalking && fighter.walkSprite && showWalkFrame)
+      return fighter.walkSprite;
+    return fighter.sprite;
+  }, [
+    isSingleSprite,
+    fighter,
+    state,
+    isDefeated,
+    isVictorious,
+    isHit,
+    isDefending,
+    isJumpKicking,
+    isWalking,
+    showWalkFrame,
+  ]);
+
+  // Memoized flip calculation
+  const shouldFlip = useMemo(
+    () =>
+      (side === "left" && isFacingLeft) || (side === "right" && !isFacingLeft),
+    [side, isFacingLeft],
+  );
+
   // For single sprites, we need to use Image component for better compatibility
   if (isSingleSprite) {
-    // Determine which sprite to use based on state
-    let spriteToUse = fighter.sprite;
-
-    if (isDefeated && fighter.lostSprite) {
-      spriteToUse = fighter.lostSprite;
-    } else if (isVictorious && fighter.wonSprite) {
-      spriteToUse = fighter.wonSprite;
-    } else if (isHit && !isDefending && fighter.hitSprite) {
-      // Only show hit sprite if not defending
-      spriteToUse = fighter.hitSprite;
-    } else if (state === "punch" && fighter.punchSprite) {
-      spriteToUse = fighter.punchSprite;
-    } else if (state === "kick" && fighter.kickSprite) {
-      spriteToUse = fighter.kickSprite;
-    } else if (state === "jump") {
-      // If player is kicking while jumping, use kick sprite
-      if (isJumpKicking && fighter.kickSprite) {
-        spriteToUse = fighter.kickSprite;
-      } else {
-        spriteToUse = fighter.jumpSprite || fighter.sprite;
-      }
-    } else if ((state === "defence" || isDefending) && fighter.defenceSprite) {
-      // Show defense sprite when in defense state or isDefending is true
-      spriteToUse = fighter.defenceSprite;
-    } else if (state === "duck" && fighter.duckSprite) {
-      spriteToUse = fighter.duckSprite;
-    } else if (isWalking && fighter.walkSprite && showWalkFrame) {
-      // Use walk sprite when walking and on walk frame
-      spriteToUse = fighter.walkSprite;
-    }
-
-    // Determine if the sprite should be flipped
-    // For right side (CPU), always flip the sprite horizontally
-    // For left side (player), flip when facing left (away from center)
-    const shouldFlip =
-      (side === "left" && isFacingLeft) || (side === "right" && !isFacingLeft);
-
     return (
       <div
         className="absolute fighter-container"
@@ -127,30 +136,31 @@ export function Fighter({
     );
   }
 
-  // For sprite sheets, calculate the position based on state
-  const getSpritePosition = () => {
-    // Each sprite is 80x80 pixels in a 4x3 grid
+  // For sprite sheets, calculate the position based on state - memoized
+  const spritePosition = useMemo(() => {
     switch (state) {
       case "idle":
-        return { x: 0, y: 0 }; // Top-left sprite
+        return { x: 0, y: 0 };
       case "punch":
-        return { x: 80, y: 0 }; // Second sprite in first row
+        return { x: 80, y: 0 };
       case "kick":
-        return { x: 240, y: 0 }; // Fourth sprite in first row
+        return { x: 240, y: 0 };
       case "duck":
-        return { x: 0, y: 80 }; // First sprite in second row
+        return { x: 0, y: 80 };
       case "jump":
-        return { x: 160, y: 80 }; // Third sprite in second row
+        return { x: 160, y: 80 };
       case "defence":
-        return { x: 160, y: 0 }; // Second sprite in first row
+        return { x: 160, y: 0 };
       default:
         return { x: 0, y: 0 };
     }
-  };
+  }, [state]);
 
-  const spritePosition = getSpritePosition();
-  const shouldFlip =
-    (side === "right" && !isFacingLeft) || (side === "left" && isFacingLeft);
+  const spriteSheetFlip = useMemo(
+    () =>
+      (side === "right" && !isFacingLeft) || (side === "left" && isFacingLeft),
+    [side, isFacingLeft],
+  );
 
   return (
     <div
@@ -168,7 +178,7 @@ export function Fighter({
       }}
     >
       <div
-        className={`relative w-full h-full ${shouldFlip ? "scale-x-[-1]" : ""}`}
+        className={`relative w-full h-full ${spriteSheetFlip ? "scale-x-[-1]" : ""}`}
         style={{
           transform:
             state === "punch"

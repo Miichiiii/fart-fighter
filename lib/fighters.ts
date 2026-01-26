@@ -1,3 +1,10 @@
+export interface FighterStats {
+  speed: number; // 1-10: Bewegungsgeschwindigkeit
+  power: number; // 1-10: Angriffsstärke
+  defense: number; // 1-10: Verteidigungsstärke
+  stamina: number; // 1-10: Ausdauer
+}
+
 export interface Fighter {
   id: string;
   name: string;
@@ -16,6 +23,7 @@ export interface Fighter {
   hitSprite?: string;
   useSingleSprite?: boolean;
   specialMove: string;
+  stats: FighterStats;
 }
 
 export const fighters: Fighter[] = [
@@ -36,6 +44,7 @@ export const fighters: Fighter[] = [
     hitSprite: "/images/fighters/1-king-def-removebg-preview.png",
     useSingleSprite: true,
     specialMove: "Donnernder Duft-Hammer",
+    stats: { speed: 6, power: 8, defense: 7, stamina: 5 },
   },
   {
     id: "mrs-stinky",
@@ -55,6 +64,7 @@ export const fighters: Fighter[] = [
     hitSprite: "/images/fighters/2-mrs-hit-removebg-preview.png",
     useSingleSprite: true,
     specialMove: "Sonic Stink-Welle",
+    stats: { speed: 8, power: 6, defense: 5, stamina: 7 },
   },
   {
     id: "don-farty",
@@ -73,6 +83,7 @@ export const fighters: Fighter[] = [
     hitSprite: "/images/fighters/4-op-angegriffn-removebg-preview.png",
     useSingleSprite: true,
     specialMove: "Turbo-Pups Combo",
+    stats: { speed: 9, power: 5, defense: 4, stamina: 8 },
   },
   {
     id: "detektiv-duftnote",
@@ -91,6 +102,7 @@ export const fighters: Fighter[] = [
     hitSprite: "/images/fighters/3-derd-attac-removebg-preview.png",
     useSingleSprite: true,
     specialMove: "Drei-Gänge-Geruchs-Menü",
+    stats: { speed: 7, power: 7, defense: 6, stamina: 6 },
   },
   {
     id: "mr-furz",
@@ -109,6 +121,7 @@ export const fighters: Fighter[] = [
     hitSprite: "/images/fighters/5-mrangegr-removebg-preview.png",
     useSingleSprite: true,
     specialMove: "Pümpel-Pracht-Schlag",
+    stats: { speed: 6, power: 6, defense: 6, stamina: 6 },
   },
   {
     id: "dr-dampf",
@@ -127,5 +140,6 @@ export const fighters: Fighter[] = [
     hitSprite: "/images/fighters/6-dok-angegr-removebg-preview.png",
     useSingleSprite: true,
     specialMove: "Eiserne-Därme-Defense",
+    stats: { speed: 4, power: 7, defense: 9, stamina: 6 },
   },
 ];

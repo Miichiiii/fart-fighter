@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 
 interface MobileControlsProps {
   onAction: (action: string, isPressed: boolean) => void;
@@ -23,6 +23,12 @@ export function MobileControls({ onAction }: MobileControlsProps) {
   const joystickRef = useRef<HTMLDivElement>(null);
   const joystickBaseRef = useRef<HTMLDivElement>(null);
   const activeTouchesRef = useRef<Map<number, string>>(new Map());
+  const activeButtonsRef = useRef<Set<string>>(new Set());
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    activeButtonsRef.current = activeButtons;
+  }, [activeButtons]);
 
   // Joystick configuration
   const JOYSTICK_DEADZONE = 10;
@@ -42,7 +48,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
 
       navigator.vibrate(patterns[intensity]);
     },
-    []
+    [],
   );
 
   // Handle button press with improved feedback
@@ -65,7 +71,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         triggerHapticFeedback("light");
       }
     },
-    [onAction, triggerHapticFeedback]
+    [onAction, triggerHapticFeedback],
   );
 
   const handleButtonEnd = useCallback(
@@ -82,10 +88,10 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         activeTouchesRef.current.delete(touchId);
       }
     },
-    [onAction]
+    [onAction],
   );
 
-  // Enhanced joystick handling
+  // Enhanced joystick handling - optimized with ref
   const updateJoystick = useCallback(
     (clientX: number, clientY: number, isStart: boolean = false) => {
       if (!joystickBaseRef.current) return;
@@ -123,11 +129,12 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         direction: { x: normalizedX, y: normalizedY },
       });
 
-      // Update directional controls based on joystick
-      const wasLeft = activeButtons.has("left");
-      const wasRight = activeButtons.has("right");
-      const wasUp = activeButtons.has("up");
-      const wasDown = activeButtons.has("down");
+      // Use ref for current state to avoid stale closure
+      const currentButtons = activeButtonsRef.current;
+      const wasLeft = currentButtons.has("left");
+      const wasRight = currentButtons.has("right");
+      const wasUp = currentButtons.has("up");
+      const wasDown = currentButtons.has("down");
 
       const isLeft = normalizedX < -0.3;
       const isRight = normalizedX > 0.3;
@@ -147,7 +154,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
       if (isDown && !wasDown) handleButtonStart("down");
       else if (!isDown && wasDown) handleButtonEnd("down");
     },
-    [activeButtons, handleButtonStart, handleButtonEnd]
+    [handleButtonStart, handleButtonEnd],
   );
 
   // Touch event handlers with multi-touch support
@@ -179,7 +186,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         }
       }
     },
-    [joystick.isActive, updateJoystick, handleButtonStart]
+    [joystick.isActive, updateJoystick, handleButtonStart],
   );
 
   const handleTouchMove = useCallback(
@@ -195,7 +202,7 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         }
       }
     },
-    [updateJoystick]
+    [updateJoystick],
   );
 
   const handleTouchEnd = useCallback(
@@ -228,34 +235,43 @@ export function MobileControls({ onAction }: MobileControlsProps) {
         activeTouchesRef.current.delete(touch.identifier);
       }
     },
-    [activeButtons, handleButtonEnd]
+    [activeButtons, handleButtonEnd],
   );
 
-  // Joystick return animation
+  // Joystick return animation - optimized with requestAnimationFrame
   useEffect(() => {
     if (
       !joystick.isActive &&
       (joystick.position.x !== 0 || joystick.position.y !== 0)
     ) {
-      const interval = setInterval(() => {
-        setJoystick((prev) => {
-          const newX = prev.position.x * (1 - JOYSTICK_RETURN_SPEED);
-          const newY = prev.position.y * (1 - JOYSTICK_RETURN_SPEED);
+      let animationId: number;
+      let lastTime = 0;
 
-          if (Math.abs(newX) < 1 && Math.abs(newY) < 1) {
-            return { ...prev, position: { x: 0, y: 0 } };
-          }
+      const animate = (timestamp: number) => {
+        if (timestamp - lastTime >= 16) {
+          // ~60fps
+          setJoystick((prev) => {
+            const newX = prev.position.x * (1 - JOYSTICK_RETURN_SPEED);
+            const newY = prev.position.y * (1 - JOYSTICK_RETURN_SPEED);
 
-          return { ...prev, position: { x: newX, y: newY } };
-        });
-      }, 16); // ~60fps
+            if (Math.abs(newX) < 1 && Math.abs(newY) < 1) {
+              return { ...prev, position: { x: 0, y: 0 } };
+            }
 
-      return () => clearInterval(interval);
+            return { ...prev, position: { x: newX, y: newY } };
+          });
+          lastTime = timestamp;
+        }
+        animationId = requestAnimationFrame(animate);
+      };
+
+      animationId = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationId);
     }
-  }, [joystick.isActive, joystick.position]);
+  }, [joystick.isActive, joystick.position.x, joystick.position.y]);
 
   // Dynamic button sizing based on screen size - größer für mobile
-  const getButtonSize = useCallback(() => {
+  const buttonSize = useMemo(() => {
     if (typeof window === "undefined") return { min: 70, max: 90 };
 
     const isSmallScreen = window.innerWidth < 400;
@@ -266,57 +282,70 @@ export function MobileControls({ onAction }: MobileControlsProps) {
     return { min: 70, max: 90 };
   }, []);
 
-  const buttonSize = getButtonSize();
+  // Memoized base button styles
+  const buttonBaseStyle = useMemo(
+    () => ({
+      padding: "0",
+      border: `3px solid #FFD700`,
+      borderRadius: "50%",
+      backdropFilter: "blur(8px)",
+      fontWeight: "bold" as const,
+      fontSize: "clamp(14px, 4vw, 18px)",
+      textAlign: "center" as const,
+      userSelect: "none" as const,
+      touchAction: "manipulation",
+      transition: "all 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
+      minWidth: `${buttonSize.min}px`,
+      minHeight: `${buttonSize.min}px`,
+      maxWidth: `${buttonSize.max}px`,
+      maxHeight: `${buttonSize.max}px`,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      WebkitTapHighlightColor: "transparent",
+      cursor: "pointer",
+    }),
+    [buttonSize],
+  );
 
-  const buttonStyle = (action: string) => ({
-    padding: "0",
-    border: `3px solid #FFD700`,
-    borderRadius: "50%",
-    background: activeButtons.has(action)
-      ? "linear-gradient(145deg, #FFD700, #FFA500)"
-      : "linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.2))",
-    backdropFilter: "blur(8px)",
-    color: activeButtons.has(action) ? "#000" : "#FFD700",
-    fontWeight: "bold" as const,
-    fontSize: "clamp(14px, 4vw, 18px)",
-    textAlign: "center" as const,
-    userSelect: "none" as const,
-    touchAction: "manipulation",
-    boxShadow: activeButtons.has(action)
-      ? "0 0 20px rgba(255, 215, 0, 0.8), inset 0 2px 4px rgba(0,0,0,0.2)"
-      : "0 3px 12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.2)",
-    transition: "all 0.1s cubic-bezier(0.4, 0, 0.2, 1)",
-    minWidth: `${buttonSize.min}px`,
-    minHeight: `${buttonSize.min}px`,
-    maxWidth: `${buttonSize.max}px`,
-    maxHeight: `${buttonSize.max}px`,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    WebkitTapHighlightColor: "transparent",
-    cursor: "pointer",
-    transform: activeButtons.has(action) ? "scale(0.9)" : "scale(1)",
-  });
+  const buttonStyle = useCallback(
+    (action: string) => ({
+      ...buttonBaseStyle,
+      background: activeButtons.has(action)
+        ? "linear-gradient(145deg, #FFD700, #FFA500)"
+        : "linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.2))",
+      color: activeButtons.has(action) ? "#000" : "#FFD700",
+      boxShadow: activeButtons.has(action)
+        ? "0 0 20px rgba(255, 215, 0, 0.8), inset 0 2px 4px rgba(0,0,0,0.2)"
+        : "0 3px 12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.2)",
+      transform: activeButtons.has(action) ? "scale(0.9)" : "scale(1)",
+    }),
+    [buttonBaseStyle, activeButtons],
+  );
 
-  const joystickStyle = {
-    width: "clamp(120px, 28vw, 160px)",
-    height: "clamp(120px, 28vw, 160px)",
-    maxWidth: "180px",
-    maxHeight: "180px",
-    borderRadius: "50%",
-    background:
-      "linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.15))",
-    border: "3px solid #FFD700",
-    backdropFilter: "blur(8px)",
-    boxShadow:
-      "0 3px 15px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.2)",
-    position: "relative" as const,
-    touchAction: "none" as const,
-    WebkitTapHighlightColor: "transparent",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
+  // Memoized joystick styles
+  const joystickStyle = useMemo(
+    () => ({
+      width: "clamp(120px, 28vw, 160px)",
+      height: "clamp(120px, 28vw, 160px)",
+      maxWidth: "180px",
+      maxHeight: "180px",
+      borderRadius: "50%",
+      background:
+        "linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.15))",
+      border: "3px solid #FFD700",
+      backdropFilter: "blur(8px)",
+      boxShadow:
+        "0 3px 15px rgba(0, 0, 0, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.2)",
+      position: "relative" as const,
+      touchAction: "none" as const,
+      WebkitTapHighlightColor: "transparent",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }),
+    [],
+  );
 
   const joystickKnobStyle = {
     width: "clamp(50px, 12vw, 65px)",
